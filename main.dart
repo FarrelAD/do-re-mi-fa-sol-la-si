@@ -51,37 +51,48 @@ List<int> generateWavData(Float32List samples) {
   final blockAlign = 2;
   final wavHeader = ByteData(44);
 
+  // RIFF Header
   wavHeader.setUint8(0, 'R'.codeUnitAt(0));
   wavHeader.setUint8(1, 'I'.codeUnitAt(0));
   wavHeader.setUint8(2, 'F'.codeUnitAt(0));
   wavHeader.setUint8(3, 'F'.codeUnitAt(0));
 
-  wavHeader.setUint32(4, 36 + samples.lengthInBytes, Endian.little);
+  wavHeader.setUint32(4, 36 + samples.lengthInBytes, Endian.little); // File size (bytes 4 - 7)
 
+  // Wave header
   wavHeader.setUint8(8, 'W'.codeUnitAt(0));
   wavHeader.setUint8(9, 'A'.codeUnitAt(0));
   wavHeader.setUint8(10, 'V'.codeUnitAt(0));
   wavHeader.setUint8(11, 'E'.codeUnitAt(0));
 
+  // fmt chunk
   wavHeader.setUint8(12, 'f'.codeUnitAt(0));
   wavHeader.setUint8(13, 'm'.codeUnitAt(0));
   wavHeader.setUint8(14, 't'.codeUnitAt(0));
   wavHeader.setUint8(15, ' '.codeUnitAt(0));
 
-  wavHeader.setUint32(16, 16, Endian.little);
-  wavHeader.setUint16(20, 1, Endian.little);
-  wavHeader.setUint16(22, 1, Endian.little);
-  wavHeader.setUint32(24, sampleRate, Endian.little);
-  wavHeader.setUint32(28, byteRate, Endian.little);
-  wavHeader.setUint16(32, blockAlign, Endian.little);
-  wavHeader.setUint16(34, 16, Endian.little);
+  wavHeader.setUint32(16, 16, Endian.little); // chunk size
 
+  wavHeader.setUint16(20, 1, Endian.little); // audio format
+
+  wavHeader.setUint16(22, 1, Endian.little); // number of channel
+
+  wavHeader.setUint32(24, sampleRate, Endian.little); // sample rate
+
+  wavHeader.setUint32(28, byteRate, Endian.little); // byte rate
+
+  wavHeader.setUint16(32, blockAlign, Endian.little); // block align
+
+  wavHeader.setUint16(34, 16, Endian.little); // bits per sample
+
+  // data chunk
   wavHeader.setUint8(36, 'd'.codeUnitAt(0));
   wavHeader.setUint8(37, 'a'.codeUnitAt(0));
   wavHeader.setUint8(38, 't'.codeUnitAt(0));
   wavHeader.setUint8(39, 'a'.codeUnitAt(0));
   wavHeader.setUint32(40, samples.lengthInBytes, Endian.little);
 
+  // raw audio data
   final wavData = <int>[];
   wavData.addAll(wavHeader.buffer.asUint8List());
 
